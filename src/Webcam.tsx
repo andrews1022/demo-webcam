@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 
 const Webcam = () => {
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -29,7 +29,7 @@ const Webcam = () => {
     }
   };
 
-  const stopCamVideo = () => {
+  const stopCamVideo = useCallback(() => {
     if (isStreaming && videoRef.current) {
       const stream = videoRef.current.srcObject as MediaStream;
 
@@ -39,15 +39,15 @@ const Webcam = () => {
     }
 
     setIsStreaming(false);
-  };
+  }, [isStreaming]);
 
-  const toggleStream = () => {
+  const toggleStream = useCallback(() => {
     if (!isStreaming) {
       startCamVideo();
     } else {
       stopCamVideo();
     }
-  };
+  }, [isStreaming, stopCamVideo]);
 
   return (
     <>
