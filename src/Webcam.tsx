@@ -6,7 +6,7 @@ const Webcam = () => {
   // Whether the webcam stream is currently active
   const [isStreaming, setIsStreaming] = useState(false);
 
-  const startCamVideo = () => {
+  const startCamVideo = async () => {
     const constraints = {
       video: {
         height: 720,
@@ -14,26 +14,24 @@ const Webcam = () => {
       },
     };
 
-    navigator.mediaDevices
-      .getUserMedia(constraints)
-      .then((stream) => {
-        if (videoRef.current) {
-          const video = videoRef.current;
-          video.srcObject = stream;
-          video.play();
-        }
-      })
-      .catch((err) => {
-        console.log(`${err.name}: ${err.message}`);
-      });
-
     setIsStreaming(true);
+
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia(constraints);
+
+      if (videoRef.current) {
+        const video = videoRef.current;
+        video.srcObject = stream;
+        video.play();
+      }
+    } catch (err) {
+      console.log(err);
+    }
   };
 
   const stopCamVideo = () => {
     if (isStreaming && videoRef.current) {
-      const video = videoRef.current;
-      const stream = video.srcObject as MediaStream;
+      const stream = videoRef.current.srcObject as MediaStream;
 
       if (stream) {
         stream.getTracks().forEach((track) => track.stop());
